@@ -8,12 +8,17 @@
   <body>
     <h1>Магазин автомобилей</h1>
     <div class="container">
-      <form id="carForm">
+      <input type="text" id="searchInput" placeholder="Поиск (марка или модель)" />
+      <button onclick="searchCars()">Найти</button>
+
+      <form id="carForm" enctype="multipart/form-data">
         <input type="text" id="brand" placeholder="Марка" required />
         <input type="text" id="model" placeholder="Модель" required />
         <input type="number" id="year" placeholder="Год" required />
+        <input type="file" id="image" accept="image/*" />
         <button type="submit">Добавить</button>
       </form>
+
       <ul id="carList"></ul>
     </div>
     <script src="/static/script.js"></script>

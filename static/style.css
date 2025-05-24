@@ -31,3 +31,15 @@ li {
 button {
     cursor: pointer;
 }
+
+#searchInput {
+    padding: 8px;
+    margin-bottom: 10px;
+    width: 200px;
+}
+
+.car-info img {
+    display: block;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+}

@@ -1,45 +1,52 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const carForm = document.getElementById('carForm');
-    const carList = document.getElementById('carList');
 
-    fetch('/api/cars')
+function loadCars(search = '') {
+    fetch(`/api/cars?search=${search}`)
         .then(response => response.json())
         .then(cars => {
+            carList.innerHTML = '';
             cars.forEach(car => renderCar(car));
         });
+}
 
-    carForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const car = {
-            brand: document.getElementById('brand').value,
-            model: document.getElementById('model').value,
-            year: parseInt(document.getElementById('year').value)
-        };
-        fetch('/api/cars', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(car)
-        })
-            .then(response => response.json())
-            .then(newCar => {
-                renderCar(newCar);
-                carForm.reset();
-            });
-    });
+carForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('brand', document.getElementById('brand').value);
+    formData.append('model', document.getElementById('model').value);
+    formData.append('year', document.getElementById('year').value);
+    formData.append('image', document.getElementById('image').files[0]);
 
-    function renderCar(car) {
-        const li = document.createElement('li');
-        li.innerHTML = `
-            <span>${car.brand} ${car.model} (${car.year})</span>
-            <button onclick="deleteCar(${car.id})">Удалить</button>
-        `;
-        carList.appendChild(li);
-    }
+    fetch('/api/cars', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.json())
+        .then(newCar => {
+            loadCars();
+            carForm.reset();
+        });
 });
+
+function searchCars() {
+    const search = document.getElementById('searchInput').value;
+    loadCars(search);
+}
+
+function renderCar(car) {
+    const li = document.createElement('li');
+    li.innerHTML = `
+        <div class="car-info">
+            <strong>${car.brand} ${car.model} (${car.year})</strong>
+            ${car.image ? `<img src="/static/uploads/${car.image}" width="100">` : ''}
+        </div>
+        <button onclick="deleteCar(${car.id})">Удалить</button>
+    `;
+    carList.appendChild(li);
+}
 
 function deleteCar(id) {
     fetch(`/api/cars/${id}`, { method: 'DELETE' })
-        .then(() => {
-            window.location.reload();
-        });
+        .then(() => loadCars());
 }
+
+document.addEventListener('DOMContentLoaded', () => loadCars());
